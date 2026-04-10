@@ -1,25 +1,34 @@
-# MARK-LAB
-Dentro del Mark-lab, buscaremos obtener una vision 360 del deportista para poder llevar su rendimiento al mejor nivel.
-
-# <p align="center">ATHLETE 360 LAB</p>
+# <p align="center">🚀 ATHLETE 360 LAB</p>
 <p align="center">
-  <img src="tu-logo.png" width="120" alt="Logo">
+  <img src="logo.png" width="180" alt="MARK LAB Logo">
 </p>
 <p align="center">
-  <strong>by MARK</strong>
+  <strong>by MARK</strong><br>
+  <em>Advanced Sport Science & Data Intelligence System</em>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Status-En%20Desarrollo-orange?style=for-the-badge" alt="Status">
-  <img src="https://img.shields.io/badge/Sector-Sport%20Science-blue?style=for-the-badge" alt="Sector">
+  <img src="https://img.shields.io/badge/Status-En%20Desarrollo-00D2FF?style=for-the-badge&logo=rocket" alt="Status">
+  <img src="https://img.shields.io/badge/Focus-High%20Performance-white?style=for-the-badge&logo=analytics" alt="Focus">
 </p>
 
 ---
 
-### 🚀 Sobre el Proyecto
-**ATHLETE 360 LAB** es un ecosistema integral de evaluación deportiva diseñado para centralizar datos de rendimiento, salud y carga en una sola plataforma inteligente.
+### 🧪 Sobre el Proyecto
+**ATHLETE 360 LAB** es un ecosistema digital diseñado para el análisis profundo del rendimiento atlético. Centralizamos las evaluaciones de laboratorio (IMTP, CMJ, VBT) para transformarlas en decisiones prácticas para el campo de juego.
 
-### 🛠️ Funcionalidades Actuales
-* **Test Center:** Importación de archivos CSV/XLSX de CMJ, IMTP y VBT.
-* **Analytics:** Visualización de perfiles de fuerza y asimetrías.
-* **Scoring 360:** Algoritmo de ponderación del estado atlético.
+### ⚡ Características Principales
+- **Dashboard 360:** Visualización del estado atlético mediante algoritmos de ponderación.
+- **Smart Data Import:** Autodetección y mapeo de archivos CSV/XLSX (iVolution, Encoders, etc.).
+- **Análisis de Asimetrías:** Detección temprana de riesgos lesionales mediante comparación bilateral.
+- **Módulo de Readiness:** Monitoreo diario de carga interna y bienestar del deportista.
+
+### 🛠️ Stack Tecnológico
+- **Frontend:** HTML5, JavaScript (ES6+), CSS3 (Dark Industrial UI).
+- **Gráficos:** Chart.js para visualización de perfiles F-V.
+- **Infraestructura:** GitHub Pages & Supabase (Cloud Database).
+
+---
+<p align="center">
+  Desarrollado con ❤️ para el alto rendimiento deportivo.
+</p>
