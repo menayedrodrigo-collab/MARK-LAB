@@ -14,21 +14,3 @@
 
 ---
 
-### 🧪 Sobre el Proyecto
-**ATHLETE 360 LAB** es un ecosistema digital diseñado para el análisis profundo del rendimiento atlético. Centralizamos las evaluaciones de laboratorio (IMTP, CMJ, VBT) para transformarlas en decisiones prácticas para el campo de juego.
-
-### ⚡ Características Principales
-- **Dashboard 360:** Visualización del estado atlético mediante algoritmos de ponderación.
-- **Smart Data Import:** Autodetección y mapeo de archivos CSV/XLSX (iVolution, Encoders, etc.).
-- **Análisis de Asimetrías:** Detección temprana de riesgos lesionales mediante comparación bilateral.
-- **Módulo de Readiness:** Monitoreo diario de carga interna y bienestar del deportista.
-
-### 🛠️ Stack Tecnológico
-- **Frontend:** HTML5, JavaScript (ES6+), CSS3 (Dark Industrial UI).
-- **Gráficos:** Chart.js para visualización de perfiles F-V.
-- **Infraestructura:** GitHub Pages & Supabase (Cloud Database).
-
----
-<p align="center">
-  Desarrollado con ❤️ para el alto rendimiento deportivo.
-</p>
