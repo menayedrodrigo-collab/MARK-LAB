@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ATHLETE 360 — MARK Lab Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#02040A;
+  --acc:#00B4D8;
+  --acc2:#0077B6;
+  --glow:rgba(0,180,216,.35);
+  --txt:#D6E4F0;
+  --txt2:#7A94A8;
+  --txt3:#3E5060;
+  --line:rgba(255,255,255,.07);
+}
+html,body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
+
+/* ── BACKGROUND ─────────────────────────────────────── */
+.bg-grid{
+  position:fixed;inset:0;z-index:0;
+  background-image:
+    linear-gradient(rgba(0,180,216,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,180,216,.04) 1px, transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+}
+.bg-orb1{
+  position:fixed;width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle, rgba(0,119,182,.15) 0%, transparent 70%);
+  top:-200px;left:-100px;z-index:0;pointer-events:none;
+  animation:drift1 12s ease-in-out infinite alternate;
+}
+.bg-orb2{
+  position:fixed;width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle, rgba(0,180,216,.1) 0%, transparent 70%);
+  bottom:-150px;right:-100px;z-index:0;pointer-events:none;
+  animation:drift2 15s ease-in-out infinite alternate;
+}
+.scan-line{
+  position:fixed;top:0;left:0;right:0;height:2px;z-index:1;pointer-events:none;
+  background:linear-gradient(90deg,transparent,var(--acc),transparent);
+  animation:scan 6s linear infinite;
+  opacity:.25;
+}
+@keyframes scan{0%{top:-2px}100%{top:100vh}}
+@keyframes drift1{0%{transform:translate(0,0) scale(1)}100%{transform:translate(80px,60px) scale(1.15)}}
+@keyframes drift2{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-60px,-40px) scale(1.1)}}
+
+/* ── LAYOUT ─────────────────────────────────────────── */
+.wrapper{
+  position:relative;z-index:10;
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 20px;
+}
+
+/* ── LOGO BLOCK ─────────────────────────────────────── */
+.logo-block{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:48px;
+  animation:fadeDown .8s ease both;
+}
+.logo-tri-wrap{position:relative;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+.logo-tri{
+  width:36px;height:36px;
+  background:var(--acc);
+  clip-path:polygon(50% 0%,0% 100%,100% 100%);
+  box-shadow:0 0 30px var(--glow),0 0 60px rgba(0,180,216,.2);
+  animation:pulse-tri 3s ease-in-out infinite;
+}
+.logo-tri-outer{
+  position:absolute;inset:-6px;
+  border:1px solid rgba(0,180,216,.2);
+  clip-path:polygon(50% 0%,0% 100%,100% 100%);
+  animation:pulse-tri 3s ease-in-out infinite reverse;
+}
+@keyframes pulse-tri{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(.95)}}
+.logo-text-wrap{display:flex;flex-direction:column;gap:1px}
+.logo-name{
+  font-family:'Rajdhani',sans-serif;
+  font-size:26px;font-weight:700;letter-spacing:.4em;text-transform:uppercase;
+  color:var(--acc);text-shadow:0 0 30px var(--glow);
+  line-height:1;
+}
+.logo-sub{
+  font-family:'DM Mono',monospace;font-size:9px;font-weight:300;
+  letter-spacing:.25em;text-transform:uppercase;color:var(--txt3);
+}
+
+/* ── HERO TEXT ───────────────────────────────────────── */
+.hero{text-align:center;max-width:700px;animation:fadeUp .9s .1s ease both}
+.eyebrow{
+  font-family:'DM Mono',monospace;font-size:11px;font-weight:400;
+  letter-spacing:.3em;text-transform:uppercase;color:var(--acc);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  margin-bottom:20px;
+}
+.eyebrow::before,.eyebrow::after{
+  content:'';height:1px;width:40px;
+  background:linear-gradient(90deg,transparent,var(--acc));
+}
+.eyebrow::after{background:linear-gradient(90deg,var(--acc),transparent)}
+
+.hero-title{
+  font-family:'Rajdhani',sans-serif;
+  font-size:clamp(52px,9vw,96px);
+  font-weight:700;line-height:.9;
+  letter-spacing:-.02em;
+  margin-bottom:8px;
+}
+.hero-title .line1{
+  display:block;
+  background:linear-gradient(135deg,#fff 0%,var(--txt) 50%,var(--acc) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-title .line2{
+  display:block;
+  color:transparent;
+  -webkit-text-stroke:1.5px rgba(0,180,216,.5);
+  font-size:clamp(44px,7.5vw,80px);
+  letter-spacing:.05em;
+}
+.by-mark{
+  font-family:'DM Mono',monospace;font-size:13px;font-weight:300;
+  letter-spacing:.2em;color:var(--txt2);margin-bottom:32px;text-transform:uppercase;
+}
+.by-mark span{color:var(--acc);font-weight:500}
+
+.hero-desc{
+  font-size:15px;line-height:1.8;color:var(--txt2);
+  max-width:500px;margin:0 auto 44px;font-weight:300;
+}
+
+/* ── STATS ROW ───────────────────────────────────────── */
+.stats{
+  display:flex;align-items:center;justify-content:center;gap:32px;
+  margin-bottom:44px;
+  animation:fadeUp .9s .2s ease both;
+}
+.stat{text-align:center}
+.stat-n{
+  font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;
+  color:var(--acc);line-height:1;
+  text-shadow:0 0 20px var(--glow);
+}
+.stat-l{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--txt3);margin-top:3px}
+.stat-div{width:1px;height:32px;background:var(--line)}
+
+/* ── CTA ─────────────────────────────────────────────── */
+.cta-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;animation:fadeUp .9s .3s ease both}
+
+.btn-enter{
+  position:relative;overflow:hidden;
+  display:inline-flex;align-items:center;gap:12px;
+  padding:16px 48px;
+  font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;
+  letter-spacing:.15em;text-transform:uppercase;
+  color:var(--bg);
+  background:var(--acc);
+  border:none;border-radius:3px;cursor:pointer;
+  box-shadow:0 0 30px rgba(0,180,216,.4),0 0 60px rgba(0,180,216,.15);
+  transition:all .2s;
+  text-decoration:none;
+}
+.btn-enter::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);
+  transform:translateX(-100%);transition:transform .4s;
+}
+.btn-enter:hover::before{transform:translateX(100%)}
+.btn-enter:hover{
+  box-shadow:0 0 40px rgba(0,180,216,.6),0 0 80px rgba(0,180,216,.25);
+  transform:translateY(-2px);
+}
+.btn-enter .arrow{font-size:18px;transition:transform .2s}
+.btn-enter:hover .arrow{transform:translateX(6px)}
+
+.btn-login{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 28px;
+  font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--txt2);
+  background:none;border:1px solid var(--line);border-radius:3px;cursor:pointer;
+  transition:all .2s;text-decoration:none;
+}
+.btn-login:hover{border-color:var(--acc);color:var(--acc)}
+
+.hint{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.15em;
+  color:var(--txt3);text-transform:uppercase;margin-top:6px;
+}
+
+/* ── MODULES STRIP ───────────────────────────────────── */
+.modules{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  max-width:760px;width:100%;margin:56px auto 0;
+  background:var(--line);border:1px solid var(--line);
+  border-radius:4px;overflow:hidden;
+  animation:fadeUp .9s .4s ease both;
+}
+.mod-card{
+  background:rgba(4,6,12,.9);
+  padding:20px 16px;text-align:center;
+  transition:background .2s;
+}
+.mod-card:hover{background:rgba(0,180,216,.05)}
+.mod-icon{font-size:20px;margin-bottom:8px}
+.mod-name{
+  font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--acc);
+  margin-bottom:4px;
+}
+.mod-desc{font-size:10px;color:var(--txt3);line-height:1.5}
+
+/* ── AUTH MODAL ──────────────────────────────────────── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(2,4,10,.92);
+  z-index:100;display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(8px);
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{
+  background:#070A14;border:1px solid var(--acc2);
+  border-top:2px solid var(--acc);border-radius:6px;
+  padding:36px;width:400px;max-width:95vw;
+  box-shadow:0 0 60px rgba(0,180,216,.15);
+  transform:translateY(20px);transition:transform .25s;
+}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;justify-content:center}
+.modal-logo-tri{width:20px;height:20px;background:var(--acc);clip-path:polygon(50% 0%,0% 100%,100% 100%)}
+.modal-logo-name{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:.3em;color:var(--acc)}
+.modal-title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;letter-spacing:.08em;text-align:center;margin-bottom:6px}
+.modal-sub{font-size:11px;color:var(--txt2);text-align:center;margin-bottom:28px;line-height:1.6}
+.modal label{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--txt2);display:block;margin-bottom:5px}
+.modal input{
+  width:100%;font-size:14px;padding:11px 14px;
+  border:1px solid rgba(255,255,255,.1);border-radius:3px;
+  background:#0B0F1C;color:var(--txt);font-family:'Inter',sans-serif;
+  margin-bottom:14px;transition:border .15s;outline:none;
+}
+.modal input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(0,180,216,.1)}
+.modal-btn{
+  width:100%;padding:13px;
+  font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  background:var(--acc);color:#02040A;border:none;border-radius:3px;cursor:pointer;
+  transition:all .15s;margin-top:4px;
+}
+.modal-btn:hover{background:#00CCF5;box-shadow:0 0 20px rgba(0,180,216,.4)}
+.modal-btn:disabled{opacity:.5;cursor:not-allowed}
+.modal-toggle{
+  text-align:center;margin-top:14px;font-size:12px;color:var(--txt2);
+}
+.modal-toggle a{color:var(--acc);cursor:pointer;text-decoration:none}
+.modal-toggle a:hover{text-decoration:underline}
+.modal-close{
+  position:absolute;top:16px;right:18px;background:none;border:none;
+  color:var(--txt3);font-size:18px;cursor:pointer;padding:4px;
+}
+.modal-close:hover{color:var(--txt)}
+.modal-msg{font-size:12px;padding:8px 12px;border-radius:3px;margin-bottom:12px;display:none}
+.modal-msg.err{background:rgba(226,75,74,.12);border:1px solid rgba(226,75,74,.3);color:#E24B4A}
+.modal-msg.ok{background:rgba(58,184,130,.12);border:1px solid rgba(58,184,130,.3);color:#3AB882}
+
+/* ── FOOTER ──────────────────────────────────────────── */
+.footer{
+  position:relative;z-index:10;
+  text-align:center;padding:28px;
+  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--txt3);
+}
+
+/* ── ANIMS ───────────────────────────────────────────── */
+@keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── RESPONSIVE ──────────────────────────────────────── */
+@media(max-width:600px){
+  .modules{grid-template-columns:repeat(2,1fr)}
+  .stats{gap:20px}.stat-n{font-size:22px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orb1"></div>
+<div class="bg-orb2"></div>
+<div class="scan-line"></div>
+
+<div class="wrapper">
+
+  <!-- LOGO -->
+  <div class="logo-block">
+    <div class="logo-tri-wrap">
+      <div class="logo-tri"></div>
+      <div class="logo-tri-outer"></div>
+    </div>
+    <div class="logo-text-wrap">
+      <div class="logo-name">MARK Lab</div>
+      <div class="logo-sub">Sport Science Platform</div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="eyebrow">Sistema de evaluación integral</div>
+
+    <h1 class="hero-title">
+      <span class="line1">ATHLETE</span>
+      <span class="line2">360°</span>
+    </h1>
+
+    <div class="by-mark">by <span>MARK Lab Pro</span></div>
+
+    <p class="hero-desc">
+      Plataforma integral de ciencias del deporte. Analizá perfiles F-V, gestioná protocolos RTR/RTP y tomá decisiones basadas en evidencia — todo en un solo lugar.
+    </p>
+
+    <!-- STATS -->
+    <div class="stats">
+      <div class="stat"><div class="stat-n">26+</div><div class="stat-l">Features</div></div>
+      <div class="stat-div"></div>
+      <div class="stat"><div class="stat-n">8</div><div class="stat-l">Protocolos RTP</div></div>
+      <div class="stat-div"></div>
+      <div class="stat"><div class="stat-n">14</div><div class="stat-l">Refs normativas</div></div>
+      <div class="stat-div"></div>
+      <div class="stat"><div class="stat-n">∞</div><div class="stat-l">Atletas</div></div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-wrap">
+      <a href="app.html" class="btn-enter">
+        Entrar a la plataforma <span class="arrow">→</span>
+      </a>
+      <button class="btn-login" onclick="openModal('login')">
+        Iniciar sesión con cuenta
+      </button>
+      <div class="hint">Acceso gratuito · Sin instalación</div>
+    </div>
+  </div>
+
+  <!-- MODULES STRIP -->
+  <div class="modules">
+    <div class="mod-card">
+      <div class="mod-icon">🏠</div>
+      <div class="mod-name">Home</div>
+      <div class="mod-desc">Dashboard 360° y scoring atlético</div>
+    </div>
+    <div class="mod-card">
+      <div class="mod-icon">⚡</div>
+      <div class="mod-name">Test Center</div>
+      <div class="mod-desc">CSV / XLSX, VBT, CFJ, Goniómetro</div>
+    </div>
+    <div class="mod-card">
+      <div class="mod-icon">📊</div>
+      <div class="mod-name">Analytics</div>
+      <div class="mod-desc">Perfil F-V, fiabilidad, evolución</div>
+    </div>
+    <div class="mod-card">
+      <div class="mod-icon">🏥</div>
+      <div class="mod-name">Medical</div>
+      <div class="mod-desc">RTR/RTP, escalas psicológicas, movilidad</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal" style="position:relative">
+    <button class="modal-close" onclick="closeModal()">×</button>
+
+    <div class="modal-logo">
+      <div class="modal-logo-tri"></div>
+      <div class="modal-logo-name">MARK Lab</div>
+    </div>
+
+    <div id="form-login">
+      <div class="modal-title">Iniciar sesión</div>
+      <div class="modal-sub">Accedé a tus atletas guardados en la nube</div>
+      <div class="modal-msg" id="login-msg"></div>
+      <label>Email</label>
+      <input type="email" id="login-email" placeholder="tu@email.com" autocomplete="email">
+      <label>Contraseña</label>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+      <button class="modal-btn" onclick="doLogin()" id="login-btn">Entrar</button>
+      <div class="modal-toggle">
+        ¿No tenés cuenta? <a onclick="showForm('register')">Registrarse</a>
+      </div>
+    </div>
+
+    <div id="form-register" style="display:none">
+      <div class="modal-title">Crear cuenta</div>
+      <div class="modal-sub">Guardá tus atletas en la nube</div>
+      <div class="modal-msg" id="reg-msg"></div>
+      <label>Email</label>
+      <input type="email" id="reg-email" placeholder="tu@email.com" autocomplete="email">
+      <label>Contraseña</label>
+      <input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+      <button class="modal-btn" onclick="doRegister()" id="reg-btn">Crear cuenta</button>
+      <div class="modal-toggle">
+        ¿Ya tenés cuenta? <a onclick="showForm('login')">Iniciar sesión</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">
+  ATHLETE 360 · MARK Lab Pro · Sport Science Platform · 2025
+</div>
+
+<script>
+const SUPABASE_URL  = 'https://uqwwtjgtollpvvfjkdce.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_MopSmAQRfFFezL3o1RpiYQ_Nqw_nBur';
+
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// Check if already logged in → redirect to app
+(async function(){
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session) {
+    // Pass token to app via URL hash (app.html will read it)
+    window.location.href = 'app.html';
+  }
+})();
+
+function openModal(mode){
+  document.getElementById('modal-overlay').classList.add('open');
+  showForm(mode || 'login');
+}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+function handleOverlayClick(e){
+  if(e.target === document.getElementById('modal-overlay')) closeModal();
+}
+function showForm(which){
+  document.getElementById('form-login').style.display   = which==='login'    ? 'block' : 'none';
+  document.getElementById('form-register').style.display = which==='register' ? 'block' : 'none';
+}
+
+function showMsg(id, msg, type){
+  var el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'modal-msg ' + type;
+  el.style.display = 'block';
+}
+
+async function doLogin(){
+  var email = document.getElementById('login-email').value.trim();
+  var pass  = document.getElementById('login-pass').value;
+  if(!email||!pass){ showMsg('login-msg','Completá todos los campos','err'); return; }
+  var btn = document.getElementById('login-btn');
+  btn.disabled=true; btn.textContent='Entrando...';
+  var { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if(error){
+    showMsg('login-msg', error.message, 'err');
+    btn.disabled=false; btn.textContent='Entrar';
+  } else {
+    showMsg('login-msg','¡Bienvenido! Redirigiendo...','ok');
+    setTimeout(function(){ window.location.href='app.html'; }, 800);
+  }
+}
+
+async function doRegister(){
+  var email = document.getElementById('reg-email').value.trim();
+  var pass  = document.getElementById('reg-pass').value;
+  if(!email||!pass){ showMsg('reg-msg','Completá todos los campos','err'); return; }
+  if(pass.length < 6){ showMsg('reg-msg','La contraseña debe tener al menos 6 caracteres','err'); return; }
+  var btn = document.getElementById('reg-btn');
+  btn.disabled=true; btn.textContent='Creando cuenta...';
+  var { error } = await sb.auth.signUp({ email, password: pass });
+  if(error){
+    showMsg('reg-msg', error.message, 'err');
+    btn.disabled=false; btn.textContent='Crear cuenta';
+  } else {
+    showMsg('reg-msg','¡Cuenta creada! Revisá tu email para confirmar.','ok');
+    btn.textContent='¡Listo!';
+  }
+}
+
+// Enter key support
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') closeModal();
+  if(e.key === 'Enter'){
+    if(document.getElementById('form-login').style.display !== 'none') doLogin();
+    else doRegister();
+  }
+});
+</script>
+</body>
+</html>
